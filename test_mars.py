@@ -2,17 +2,6 @@ import unittest
 
 import mars
 
-# Sample Input
-# 5 3
-# 1 1 E
-# "RFRFRFRF"
-# 3 2 N
-# FRRFLLFFRRFLL
-# 0 3 W
-# LLFFFLFLFL
-# Sample Output
-# 1 1 E
-
 
 class TestCase(unittest.TestCase):
     # TODO: errors
@@ -61,6 +50,17 @@ class TestCase(unittest.TestCase):
                  {"x": 1, "y": 1, "orientation": "E"}]
         outTxtLines = mars.objToTxtLines(inObj)
         self.assertEqual(outTxtLines[1], "1 1 E")
+
+    def test_moveRobots(self):
+        inTxtLines = ["5 3", "1 1 E", "RFRFRFRF", "3 2 N",
+                      "FRRFLLFFRRFLL", "0 3 W", "LLFFFLFLFL"]
+        outTxtLinesExpected = ["1 1 E", "3 3 N LOST", "2 3 S"]
+
+        inCmds = mars.txtToObj(inTxtLines)
+        outObj = mars.moveRobots(inCmds, mars.commandLogic)
+        outTxtLines = mars.objToTxtLines(outObj)
+
+        self.assertEqual(outTxtLines, outTxtLinesExpected)
 
 
 if __name__ == "__main__":

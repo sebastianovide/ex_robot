@@ -1,12 +1,76 @@
-def moveRobots(inCmds):
-    # TODO
+scents = {}
+ORIENTATIONS = {
+    "N": {"dx": 0, "dy": 1},
+    "E": {"dx": 1, "dy": 0},
+    "S": {"dx": 0, "dy": -1},
+    "W": {"dx": -1, "dy": 0},
+}
 
-    # mock
-    outObj = {
-        "x": 1,
-        "y": 1,
-        "orientation": "E"
-    }
+
+def changeOrientation(orientation, delta):
+    orientationIdx = list(ORIENTATIONS).index(orientation) + delta
+    if orientationIdx < 0:
+        orientationIdx += 4
+    if orientationIdx > 3:
+        orientationIdx -= 4
+
+    return list(ORIENTATIONS)[orientationIdx]
+
+
+def L(x, y, orientation, size):
+    orientation = changeOrientation(orientation, -1)
+    return x, y, orientation, False
+
+
+def R(x, y, orientation, size):
+    orientation = changeOrientation(orientation, 1)
+    return x, y, orientation, False
+
+
+def F(x, y, orientation, size):
+    lost = False
+
+    next_x = x + ORIENTATIONS[orientation]["dx"]
+    next_y = y + ORIENTATIONS[orientation]["dy"]
+
+    if next_x >= size["x"] or next_x < 0 or next_y > size["y"] or next_y < 0:
+        coordsKey = str(x) + "_" + str(x)
+
+        if (coordsKey) not in scents:
+            lost = scents[coordsKey] = True
+    else:
+        x = next_x
+        y = next_y
+
+    return x, y, orientation, lost
+
+
+commandLogic = {
+    "L": L,
+    "R": R,
+    "F": F
+}
+
+
+def moveRobots(inCmds, commandLogic):
+    outObj = []
+    size = inCmds["size"]
+    for command in inCmds["commands"]:
+        lost = False
+        x = command["location"]["x"]
+        y = command["location"]["y"]
+        orientation = command["location"]["orientation"]
+
+        for order in command["orders"]:
+            if not lost:
+                x, y, orientation, lost = commandLogic[order](
+                    x, y, orientation, size)
+
+        obj = {"x": x, "y": y, "orientation": orientation}
+        if lost:
+            obj["lost"] = True
+
+        outObj.append(obj)
 
     return outObj
 
@@ -34,22 +98,6 @@ def objToTxtLines(obj):
 
     return txtLines
 
-# {
-#     "size": {
-#         "x": 5,
-#         "y": 3
-#     },
-#     "commands": [
-#         {
-#             "location": { "x": 1, "y": 1, "orientation": "E" },
-#             "orders": "FRRFLLFFRRFLL"
-#         }
-#     ]
-# }
-
-# 3 2 N
-# FRRFLLFFRRFLL
-
 
 def txtToObj(inTxtLines):
     rtnObj = {}
@@ -75,8 +123,12 @@ if __name__ == '__main__':
 
     # parse it
     inCmds = txtToObj(inTxtLines)
-    outObj = moveRobots(inCmds)
 
-    outTxt = objToTxtLines(outObj)
+    # simulation
+    outObj = moveRobots(inCmds, commandLogic)
 
-    print(outTxt)
+    # convert result in list of text
+    outTxtLines = objToTxtLines(outObj)
+
+    for textLine in outTxtLines:
+        print(textLine)
