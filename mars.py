@@ -1,6 +1,4 @@
-
-
-def robot(inCmds):
+def moveRobots(inCmds):
     # TODO
 
     # mock
@@ -26,10 +24,15 @@ def readInput():
     return contents
 
 
-def objToTxt(obj):
-    # TODO
-    # mock
-    return "1 1 E"
+def objToTxtLines(obj):
+    txtLines = []
+    for o in obj:
+        line = str(o["x"]) + " " + str(o["y"]) + " " + o["orientation"]
+        if "lost" in o:
+            line += " LOST"
+        txtLines.append(line)
+
+    return txtLines
 
 # {
 #     "size": {
@@ -72,8 +75,8 @@ if __name__ == '__main__':
 
     # parse it
     inCmds = txtToObj(inTxtLines)
-    outObj = robot(inCmds)
+    outObj = moveRobots(inCmds)
 
-    outTxt = objToTxt(outObj)
+    outTxt = objToTxtLines(outObj)
 
     print(outTxt)

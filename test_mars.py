@@ -46,6 +46,22 @@ class TestCase(unittest.TestCase):
             "orders": "RFRFRFRF"
         })
 
+    def test_objToTxtLines_singleLocation(self):
+        inObj = [{"x": 1, "y": 1, "orientation": "E"}]
+        outTxtLines = mars.objToTxtLines(inObj)
+        self.assertEqual(outTxtLines, ["1 1 E"])
+
+    def test_objToTxtLines_singleLocation_lost(self):
+        inObj = [{"x": 1, "y": 1, "orientation": "E", "lost": True}]
+        outTxtLines = mars.objToTxtLines(inObj)
+        self.assertEqual(outTxtLines, ["1 1 E LOST"])
+
+    def test_objToTxtLines_doubleLocations(self):
+        inObj = [{"x": 1, "y": 1, "orientation": "E"},
+                 {"x": 1, "y": 1, "orientation": "E"}]
+        outTxtLines = mars.objToTxtLines(inObj)
+        self.assertEqual(outTxtLines[1], "1 1 E")
+
 
 if __name__ == "__main__":
     unittest.main()
