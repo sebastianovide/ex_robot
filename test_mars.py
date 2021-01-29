@@ -36,19 +36,22 @@ class TestCase(unittest.TestCase):
         })
 
     def test_objToTxtLines_singleLocation(self):
-        inObj = [{"x": 1, "y": 1, "orientation": "E"}]
-        outTxtLines = mars.objToTxtLines(inObj)
+        marsObj = mars.Mars()
+        marsObj.outObj = [{"x": 1, "y": 1, "orientation": "E"}]
+        outTxtLines = marsObj.objToTxtLines()
         self.assertEqual(outTxtLines, ["1 1 E"])
 
     def test_objToTxtLines_singleLocation_lost(self):
-        inObj = [{"x": 1, "y": 1, "orientation": "E", "lost": True}]
-        outTxtLines = mars.objToTxtLines(inObj)
+        marsObj = mars.Mars()
+        marsObj.outObj = [{"x": 1, "y": 1, "orientation": "E", "lost": True}]
+        outTxtLines = marsObj.objToTxtLines()
         self.assertEqual(outTxtLines, ["1 1 E LOST"])
 
     def test_objToTxtLines_doubleLocations(self):
-        inObj = [{"x": 1, "y": 1, "orientation": "E"},
-                 {"x": 1, "y": 1, "orientation": "E"}]
-        outTxtLines = mars.objToTxtLines(inObj)
+        marsObj = mars.Mars()
+        marsObj.outObj = [{"x": 1, "y": 1, "orientation": "E"},
+                          {"x": 1, "y": 1, "orientation": "E"}]
+        outTxtLines = marsObj.objToTxtLines()
         self.assertEqual(outTxtLines[1], "1 1 E")
 
     def test_moveRobots(self):
@@ -58,8 +61,8 @@ class TestCase(unittest.TestCase):
 
         inCmds = mars.txtToObj(inTxtLines)
         marsObj = mars.Mars()
-        outObj = marsObj.moveRobots(inCmds)
-        outTxtLines = mars.objToTxtLines(outObj)
+        marsObj.moveRobots(inCmds)
+        outTxtLines = marsObj.objToTxtLines()
 
         self.assertEqual(outTxtLines, outTxtLinesExpected)
 

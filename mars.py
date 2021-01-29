@@ -1,12 +1,13 @@
 class MarsWithoutLogic:
     def __init__(self):
         self.scents = {}
+        self.outObj = []
 
     def executeCommand(self, order, x, y, orientation):
         return x, y, orientation, False
 
     def moveRobots(self, inCmds):
-        outObj = []
+        self.outObj = []
         self.size = inCmds["size"]
         for command in inCmds["commands"]:
             lost = False
@@ -23,9 +24,19 @@ class MarsWithoutLogic:
             if lost:
                 obj["lost"] = True
 
-            outObj.append(obj)
+            self.outObj.append(obj)
 
-        return outObj
+        return self.outObj
+
+    def objToTxtLines(self):
+        txtLines = []
+        for o in self.outObj:
+            line = str(o["x"]) + " " + str(o["y"]) + " " + o["orientation"]
+            if "lost" in o:
+                line += " LOST"
+            txtLines.append(line)
+
+        return txtLines
 
 
 class Mars(MarsWithoutLogic):
@@ -89,23 +100,23 @@ def readInput():
             line = input('')
         except EOFError:
             break
-        contents.append(line)
+        if (line != ""):
+            contents.append(line)
 
     return contents
 
 
-def objToTxtLines(obj):
-    txtLines = []
-    for o in obj:
-        line = str(o["x"]) + " " + str(o["y"]) + " " + o["orientation"]
-        if "lost" in o:
-            line += " LOST"
-        txtLines.append(line)
-
-    return txtLines
-
-
 def txtToObj(inTxtLines):
+    """convert user input to an obj that can be used in Mars
+
+    Args:
+        inTxtLines (str): text input by the user
+
+    Returns:
+        obj: input accepted by Mars
+
+    TODO: error handling
+    """
     rtnObj = {}
     if (len(inTxtLines) > 0):
         rtnObj = {"commands": []}
@@ -123,6 +134,7 @@ def txtToObj(inTxtLines):
     return rtnObj
 
 
+# TODO: error handling
 if __name__ == '__main__':
     # read input
     inTxtLines = readInput()
@@ -137,7 +149,7 @@ if __name__ == '__main__':
     outObj = mars.moveRobots(inCmds)
 
     # convert result in list of text
-    outTxtLines = objToTxtLines(outObj)
+    outTxtLines = mars.objToTxtLines()
 
     for textLine in outTxtLines:
         print(textLine)
