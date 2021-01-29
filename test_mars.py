@@ -57,7 +57,7 @@ class TestCase(unittest.TestCase):
         outTxtLinesExpected = ["1 1 E", "3 3 N LOST", "2 3 S"]
 
         inCmds = mars.txtToObj(inTxtLines)
-        marsObj = mars.Mars(mars.commandLogic)
+        marsObj = mars.Mars()
         outObj = marsObj.moveRobots(inCmds)
         outTxtLines = mars.objToTxtLines(outObj)
 
