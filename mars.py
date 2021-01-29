@@ -1,4 +1,3 @@
-scents = {}
 ORIENTATIONS = {
     "N": {"dx": 0, "dy": 1},
     "E": {"dx": 1, "dy": 0},
@@ -17,17 +16,17 @@ def changeOrientation(orientation, delta):
     return list(ORIENTATIONS)[orientationIdx]
 
 
-def L(x, y, orientation, size):
+def L(x, y, orientation, size, scents):
     orientation = changeOrientation(orientation, -1)
     return x, y, orientation, False
 
 
-def R(x, y, orientation, size):
+def R(x, y, orientation, size, scents):
     orientation = changeOrientation(orientation, 1)
     return x, y, orientation, False
 
 
-def F(x, y, orientation, size):
+def F(x, y, orientation, size, scents):
     lost = False
 
     next_x = x + ORIENTATIONS[orientation]["dx"]
@@ -50,29 +49,6 @@ commandLogic = {
     "R": R,
     "F": F
 }
-
-
-def moveRobots(inCmds, commandLogic):
-    outObj = []
-    size = inCmds["size"]
-    for command in inCmds["commands"]:
-        lost = False
-        x = command["location"]["x"]
-        y = command["location"]["y"]
-        orientation = command["location"]["orientation"]
-
-        for order in command["orders"]:
-            if not lost:
-                x, y, orientation, lost = commandLogic[order](
-                    x, y, orientation, size)
-
-        obj = {"x": x, "y": y, "orientation": orientation}
-        if lost:
-            obj["lost"] = True
-
-        outObj.append(obj)
-
-    return outObj
 
 
 def readInput():
@@ -117,6 +93,38 @@ def txtToObj(inTxtLines):
     return rtnObj
 
 
+class Mars:
+    # def __init__(self, f, s):
+    #     self.first = f
+    #     self.second = s
+
+    def __init__(self, commandLogic):
+        self.commandLogic = commandLogic
+        self.scents = {}
+
+    def moveRobots(self, inCmds):
+        outObj = []
+        size = inCmds["size"]
+        for command in inCmds["commands"]:
+            lost = False
+            x = command["location"]["x"]
+            y = command["location"]["y"]
+            orientation = command["location"]["orientation"]
+
+            for order in command["orders"]:
+                if not lost:
+                    x, y, orientation, lost = self.commandLogic[order](
+                        x, y, orientation, size, self.scents)
+
+            obj = {"x": x, "y": y, "orientation": orientation}
+            if lost:
+                obj["lost"] = True
+
+            outObj.append(obj)
+
+        return outObj
+
+
 if __name__ == '__main__':
     # read input
     inTxtLines = readInput()
@@ -124,8 +132,11 @@ if __name__ == '__main__':
     # parse it
     inCmds = txtToObj(inTxtLines)
 
+    # new simulation.
+    mars = Mars(commandLogic)
+
     # simulation
-    outObj = moveRobots(inCmds, commandLogic)
+    outObj = mars.moveRobots(inCmds)
 
     # convert result in list of text
     outTxtLines = objToTxtLines(outObj)

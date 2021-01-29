@@ -57,7 +57,8 @@ class TestCase(unittest.TestCase):
         outTxtLinesExpected = ["1 1 E", "3 3 N LOST", "2 3 S"]
 
         inCmds = mars.txtToObj(inTxtLines)
-        outObj = mars.moveRobots(inCmds, mars.commandLogic)
+        marsObj = mars.Mars(mars.commandLogic)
+        outObj = marsObj.moveRobots(inCmds)
         outTxtLines = mars.objToTxtLines(outObj)
 
         self.assertEqual(outTxtLines, outTxtLinesExpected)
